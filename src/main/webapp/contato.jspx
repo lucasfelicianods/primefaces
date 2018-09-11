@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ui:composition template="template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a="http://www.ambientinformatica.com.br/jsf2"
+	xmlns:p="http://primefaces.org/ui">
+	<ui:define name="corpo">
+	
+		<p:panel header="Formulário" id="panel">
+			<h:panelGrid columns="2">
+				<h:outputText value="Nome: "></h:outputText>
+				<p:inputText value="#{ContatoControl.contato.nome}" ></p:inputText>
+				<h:outputText value="Telefone: "></h:outputText>
+				<p:inputMask value="#{ContatoControl.contato.telefone }"
+					mask="(99) 9999-9999" ></p:inputMask>
+				<p:commandButton actionListener="#{ContatoControl.confirmar }"
+					value="Confirmar" update="contatos, panel"/>
+							<p:commandButton actionListener="#{ContatoControl.alterar }"
+					value="Salvar Alterações" update="contatos, panel"/>
+				
+					
+					
+				<br />
+			</h:panelGrid>
+
+			<h:panelGroup>
+				<h:outputText value="Nome ou Telefone: " />
+				<p:inputText maxlength="30" size="30"
+					value="#{ContatoControl.nomeOuTelefone}">
+				</p:inputText>
+				<p:commandButton actionListener="#{ContatoControl.pesquisar}"
+					value="Consultar" update="contatos">
+	
+				</p:commandButton>
+				
+			</h:panelGroup>
+		</p:panel>
+		<p:dataTable id="contatos" value="#{ContatoControl.contatos }"
+			var="cont" width="100%" emptyMessage="Sem registros"
+			editable="true" paginator="true" rows="3">
+			
+			<f:facet name="header">
+				<h:outputText value="Lista de Contatos">
+				
+				</h:outputText><br/>
+				<h:outputText value="Registros: "/>
+				<h:outputText value="#{ContatoControl.contatos.size() }">
+				
+				</h:outputText>
+			</f:facet>
+			<p:column width="2%">
+				<f:facet name="header">
+					<h:outputText value="Qtd"></h:outputText>
+				</f:facet>
+			</p:column>
+			
+			<p:column sortBy="#{cont.id }">
+				<f:facet name="header">
+					<h:outputText value="Id"></h:outputText>
+				</f:facet>
+				<h:outputText value="#{cont.id }"></h:outputText>
+			</p:column>
+			<p:column sortBy="#{cont.nome }">
+				<f:facet name="header">
+					<h:outputText value="Nome"></h:outputText>
+				</f:facet>
+				
+					<p:cellEditor>
+					
+					
+					<f:facet name="output">
+					
+					
+						<h:outputText value="#{cont.nome }"></h:outputText>
+					</f:facet>
+	
+					<f:facet name="input">
+						<p:inputText value="#{cont.nome }"></p:inputText>
+					</f:facet>
+				</p:cellEditor>
+				
+			</p:column>
+			 
+				<p:column sortBy="#{cont.telefone }">
+					<f:facet name="header">
+					<h:outputText value="Telefone"></h:outputText>
+				</f:facet>
+				
+					<p:cellEditor>
+					
+					<f:facet name="output">
+					
+						<h:outputText value="#{cont.telefone }"></h:outputText>
+					</f:facet>
+	
+					<f:facet name="input">
+						<p:inputText value="#{cont.telefone }"></p:inputText>
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+			<p:ajax event="rowEdit" listener="#{ContatoControl.modificar(cont)}" update="contatos"/>
+			
+				<p:column width="2%">
+				<f:facet name="header">
+					<h:outputText value="PopUp" />
+				</f:facet>
+            		
+            		<p:commandButton icon="ui-icon-pencil" style="width: 30px;  height:30px;"  update=":formCorpo:edicao" oncomplete="edicao.show()">
+						 <f:setPropertyActionListener value="#{cont}" target="#{ContatoControl.contatoSelecionado}" />
+					</p:commandButton>
+            		
+            		
+			</p:column>
+			
+
+			<p:column width="8%" >
+
+				<f:facet name="header">
+					<h:outputText value="Opções" />
+				</f:facet>
+
+								
+				<p:commandButton icon="ui-icon-pencil"
+					style="width:30px; height:30px;" id="btnEditarProduto"
+					actionListener="#{ContatoControl.selecionarContatoParaEdicao(cont)}"
+					onclick="PF('dialogNovoContato').show();" />
+				
+				
+				<p:commandButton icon="ui-icon-trash"
+					style="width: 30px; height:30px;"
+					actionListener="#{ContatoControl.excluir(cont)}" update="contatos">
+					
+				</p:commandButton>
+				
+
+			</p:column>
+			
+				
+				<p:column width="1%">
+				<f:facet name="header" >
+					<h:outputText value="Edit"  ></h:outputText>
+				</f:facet>
+				
+				<p:rowEditor />
+				
+				</p:column>
+			</p:dataTable>
+		
+			 <p:dialog id="dialogNovoContato" widgetVar="dialogNovoContato" header="Modal Dialog"  modal="true" height="100">
+    				<h:outputText value="This is a Modal Dialog."  />
+			</p:dialog>
+			
+
+		<p:dialog header="ALTERAR CONTATO VIA POPUP" widgetVar="edicao" id="edicao">
+					<a:field label="Código">
+		                <p:inputText id="codigo" value="#{ContatoControl.contatoSelecionado.id }" disabled="true"/>
+					</a:field>
+					<a:field label="Nome" spaceLeft="10px">
+	                    <p:inputText value="#{ContatoControl.contatoSelecionado.nome}" />
+					</a:field>
+					<a:field label="Telefone" spaceLeft="10px">
+	                    <p:inputMask value="#{ContatoControl.contatoSelecionado.telefone}" mask="(99) 9999-9999" ></p:inputMask>
+					</a:field>
+					<a:newLine/>
+					<a:newLine/>
+                    <p:commandButton icon="ui-icon-wrench" value="Confirmar"  actionListener="#{ContatoControl.update}" update="contatos, panel" onsuccess="edicao.hide()"></p:commandButton>
+		</p:dialog>
+		
+		
+	</ui:define>
+</ui:composition>
